@@ -1,5 +1,4 @@
-name: SSH Runner + Tailscale + sshx.io
-
+name: test vps
 on:
   workflow_dispatch:
 
