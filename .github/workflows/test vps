@@ -1,0 +1,57 @@
+name: SSH Runner + Tailscale + sshx.io
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  setup-sshx-runner:
+    runs-on: ubuntu-latest
+    timeout-minutes: 355  # 5 hours
+    env:
+      TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY }}
+      SSHX_TOKEN: ${{ secrets.SSHX_TOKEN }}  # لو عندك sshx.io token
+    steps:
+      - uses: actions/checkout@v3
+
+      # --- Install Tailscale ---
+      - name: Install Tailscale
+        run: |
+          curl -fsSL https://tailscale.com/install.sh | sh
+
+      - name: Authenticate to Tailscale
+        run: |
+          sudo tailscale up --authkey=${TAILSCALE_AUTHKEY} --hostname=gh-sshx-runner
+
+      - name: Check Tailscale status
+        run: |
+          tailscale status
+          echo "Tailscale IP:"
+          tailscale ip -4 | head -n1
+
+      - name: Install Python packages
+        run: |
+          pip install pyrogram shlex asyncio tgcrypto telethon python-telegram-bot aiogram pyTelegramBotAPI requests aiohttp python-dotenv rich Pillow uvloop orjson ujson pydantic sqlalchemy aiosqlite motor pymongo cryptography pyjwt httpx loguru colorama pyyaml lxml beautifulsoup4 fastapi tqdm
+
+      - name: Download file to /mnt
+        run: |
+          sudo wget -O /mnt/main.py "https://raw.githubusercontent.com/tamata2000/install-files-/refs/heads/main/main.py"
+
+      # --- Start sshx.io session ---
+      - name: Start sshx.io session
+        run: |
+          echo ">>> Starting sshx.io session..."
+          curl -sSf https://sshx.io/get | sh -s run &
+          
+          # Get Tailscale IP for SSH connection
+          TAILSCALE_IP=$(tailscale ip -4 | head -n1)
+          echo
+          echo "=== SSH CONNECTION INFO ==="
+          echo "Connect using either:"
+          echo "  SSH via Tailscale: ssh -o StrictHostKeyChecking=no runner@${TAILSCALE_IP}"
+          echo "  OR connect via sshx.io if token is configured"
+          echo
+          echo ">>> Keeping session alive for 6 hours..."
+          sleep 21000
