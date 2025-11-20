@@ -22,7 +22,7 @@ jobs:
 
       - name: Install Python packages
         run: |
-          pip install flask pyrogram tgcrypto telethon python-telegram-bot aiogram pyTelegramBotAPI requests aiohttp python-dotenv rich Pillow uvloop orjson ujson pydantic sqlalchemy aiosqlite motor pymongo cryptography pyjwt httpx loguru colorama pyyaml lxml beautifulsoup4 fastapi tqdm
+          pip install flask pyrogram flask-socketio eventlet tgcrypto telethon python-telegram-bot aiogram pyTelegramBotAPI requests aiohttp python-dotenv rich Pillow uvloop orjson ujson pydantic sqlalchemy aiosqlite motor pymongo cryptography pyjwt httpx loguru colorama pyyaml lxml beautifulsoup4 fastapi tqdm
 
       - name: Install nmap
         run: |
