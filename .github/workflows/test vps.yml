@@ -11,9 +11,15 @@ jobs:
     timeout-minutes: 355  # 5 hours
     env:
       TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY }}
-      SSHX_TOKEN: ${{ secrets.SSHX_TOKEN }}  # لو عندك sshx.io token
+      SSHX_TOKEN: ${{ secrets.SSHX_TOKEN }}
     steps:
       - uses: actions/checkout@v3
+
+      # إضافة إعداد بايثون لضمان الاستقرار
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
 
       # --- Install Tailscale ---
       - name: Install Tailscale
@@ -31,8 +37,9 @@ jobs:
           tailscale ip -4 | head -n1
 
       - name: Install Python packages
+        # تم حذف shlex و asyncio لأنها مدمجة في بايثون ولا تثبت
         run: |
-          pip install pyrogram shlex asyncio tgcrypto telethon python-telegram-bot aiogram pyTelegramBotAPI requests aiohttp python-dotenv rich Pillow uvloop orjson ujson pydantic sqlalchemy aiosqlite motor pymongo cryptography pyjwt httpx loguru colorama pyyaml lxml beautifulsoup4 fastapi tqdm
+          pip install pyrogram tgcrypto telethon python-telegram-bot aiogram pyTelegramBotAPI requests aiohttp python-dotenv rich Pillow uvloop orjson ujson pydantic sqlalchemy aiosqlite motor pymongo cryptography pyjwt httpx loguru colorama pyyaml lxml beautifulsoup4 fastapi tqdm
 
       - name: Download file to /mnt
         run: |
